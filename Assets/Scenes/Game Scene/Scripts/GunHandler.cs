@@ -12,6 +12,8 @@ public class GunHandler : MonoBehaviour
     private bool m_isGunInHand = false;
     private int m_gunAmmo = 1;
 
+    private bool m_handling = false;
+
     // Start is called before the first frame update
     private void Start()
     {
@@ -21,7 +23,7 @@ public class GunHandler : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (m_handling && Input.GetMouseButtonDown(0))
         {
             if (!m_isGunInHand)
             {
@@ -39,5 +41,9 @@ public class GunHandler : MonoBehaviour
                 //shoomt
             }
         }
+    }
+
+    public void StartHandling()
+    {
     }
 }

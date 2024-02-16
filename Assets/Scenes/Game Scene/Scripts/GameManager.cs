@@ -1,4 +1,3 @@
-using SnakeGame;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -10,7 +9,7 @@ public class GameManager : MonoBehaviour
     private TextMeshProUGUI m_timer;
 
     [SerializeField]
-    private TemperatureHandler m_temperatureHandler;
+    private Egg egg;
 
     private Coroutine Timer;
 
@@ -42,7 +41,7 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         Timer = StartCoroutine(TickTime());
-        m_temperatureHandler.StartHandling();
+        egg.StartHatching();
     }
 
     // Update is called once per frame
@@ -52,6 +51,6 @@ public class GameManager : MonoBehaviour
 
     private void OnDestroy()
     {
-        if (Timer != null) { StopCoroutine(Timer); }
+        StopAllCoroutines();
     }
 }
