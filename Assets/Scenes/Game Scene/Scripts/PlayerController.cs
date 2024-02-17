@@ -10,9 +10,9 @@ public class PlayerController : InteractableComponent
 
     private Camera m_mainCamera;
 
-    private Coroutine m_calmRoutine = null;
+    private Coroutine m_healRoutine;
 
-    private bool m_bloodyHands = false;
+    private bool m_isBleeding = false;
     private bool m_calming = false;
     private bool m_blackingOut = false;
     private bool m_inAnimation = false;
@@ -20,61 +20,45 @@ public class PlayerController : InteractableComponent
     private int m_previousColliderId = -1;
     private Renderer m_previousRenderer = null;
 
-    private const int m_blackoutMin = 2;
-    private const int m_blackoutMax = 4;
+    private const int k_BleedRate = 8;
+    private const int k_BleedDelay = 2;
+    private const int k_BlackoutMin = 2;
+    private const int k_BlackoutMax = 4;
+    private const int k_BloodLimit = 120;
+    private const int k_BloodRegenRate = 12;
+    private const int k_BloodRegenDelay = 5;
 
     private const int k_InsanityRate = 2;
-    private const int k_InsanityTime = 1;
+    private const int k_InsanityDelay = 1;
     private const int k_InsanityLimit = 100;
 
-    private int m_blood = 120;
-    private int m_bloodRegenRate = 12;
-    private int m_bleedRate = 8;
+    private int m_blood = k_BloodLimit;
+
     private int m_blackoutLimit = 12;
 
     private int m_insanity = 0;
 
     private ItemComponent m_heldItem = null;
     private InteractableComponent m_focusedInteractable = null;
-    private Dictionary<EffectType, Tuple<int, Coroutine>> m_effects;
+    private Dictionary<EffectType, Tuple<Effect, Coroutine>> m_effects;
 
-    public override InteractableType Type => throw new NotImplementedException();
+    public override InteractableType Type => InteractableType.ENTITY;
 
-    public void TakeEffect(EffectType effect, int level)
+    private IEnumerator HandleBleed(Effect effect)
     {
-        //switch and run handling coroutine
-        if (m_effects.ContainsKey(effect))
+        if(effect.repeat == 0)
         {
-            StopCoroutine(m_effects[effect].Item2);
+            RemoveEffect(EffectType.BLEED);
+            yield break;
         }
 
-        switch (effect)
+        yield return new WaitForSeconds(effect.delay);
+        m_blood = Math.Max(m_blackoutLimit, m_blood - effect.magnitude);
+        if (m_blood == m_blackoutLimit)
         {
-            case EffectType.BLEED:
-                m_effects[effect] = Tuple.Create(level, StartCoroutine(HandleBleed(level)));
-                break;
-
-            default:
-                Debug.Log("Unsupported effect.");
-                break;
-        }
-    }
-
-    private IEnumerator HandleBleed(int level)
-    {
-        int bleedCount = 0;
-        while (bleedCount < 9)
-        {
-            yield return new WaitForSeconds(0);
-            bleedCount++;
-            m_blood = Math.Max(m_blackoutLimit, m_blood - m_bleedRate);
-            if(m_blood == m_blackoutLimit)
-            {
-                m_blackingOut = true;
-                m_bloodyHands = false;
-                m_effects.Remove(EffectType.BLEED);
-                yield break;
-            }
+            m_blackingOut = true;
+            RemoveEffect(EffectType.BLEED);
+            yield break;
         }
 
         yield break;
@@ -84,9 +68,9 @@ public class PlayerController : InteractableComponent
     {
         Debug.Log(m_insanity);
 
-        yield return new WaitForSeconds(k_InsanityTime);
+        yield return new WaitForSeconds(k_InsanityDelay);
 
-        m_insanity += k_InsanityRate;
+        if(!m_calming) m_insanity += k_InsanityRate;
         if (m_insanity > k_InsanityLimit)
         {
             //die code
@@ -96,19 +80,36 @@ public class PlayerController : InteractableComponent
         yield return HandleInsanity();
     }
 
-    private IEnumerator CalmDown()
+    private IEnumerator HandleHeal()
     {
-        yield return new WaitForSeconds(k_InsanityTime / 2);
+        yield return new WaitForSeconds(k_BloodRegenDelay);
 
-        if(!m_calming) m_insanity = Math.Max(0, m_insanity - k_InsanityRate);
+        m_blood = Math.Max(m_blood + k_BloodRegenRate, k_BloodLimit);
 
-        yield return CalmDown();
+        yield return HandleHeal();
+    }
+
+    private IEnumerator HandleCalm(Effect effect)
+    {
+        if (effect.repeat == 0)
+        {
+            m_effects.Remove(EffectType.CALM);
+            yield break;
+        }
+
+        yield return new WaitForSeconds(effect.delay);
+
+        m_insanity = Math.Max(0, m_insanity - effect.magnitude);
+
+        if (effect.repeat > 0) { effect.repeat--; }
+
+        yield return HandleCalm(effect);
     }
 
     // Start is called before the first frame update
     private void Start()
     {
-        m_effects = new Dictionary<EffectType, Tuple<int, Coroutine>>();
+        m_effects = new Dictionary<EffectType, Tuple<Effect, Coroutine>>();
         m_mainCamera = Camera.main;
         StartCoroutine(HandleInsanity());
     }
@@ -141,12 +142,6 @@ public class PlayerController : InteractableComponent
 
             if (Input.GetMouseButtonDown(0))
             {
-                if (m_effects.ContainsKey(EffectType.BLEED))
-                {
-                    m_focusedInteractable.ApplyEffect(EffectType.BLOOD_FED, m_effects[EffectType.BLEED].Item1);
-                    return;
-                }
-
                 if (m_heldItem != null)
                 {
                     if (m_focusedInteractable.Type == InteractableType.ENTITY)
@@ -157,7 +152,19 @@ public class PlayerController : InteractableComponent
                 }
                 else
                 {
-                    if (m_focusedInteractable.Type == InteractableType.ITEM)
+                    if(m_focusedInteractable.Type == InteractableType.ENTITY)
+                    {
+                        if (m_effects.ContainsKey(EffectType.BLEED))
+                        {
+                            m_focusedInteractable.ApplyEffect(new Effect(
+                                EffectType.BLOOD_FED,
+                                m_effects[EffectType.BLEED].Item1.magnitude * k_BleedRate,
+                                k_BleedDelay,
+                                -1));
+                        }
+                    }
+
+                    else
                     {
                         ItemComponent item = (ItemComponent)m_focusedInteractable.GetCachedComponent();
                         if (!item.ForceOnSelf(this))
@@ -187,14 +194,17 @@ public class PlayerController : InteractableComponent
 
         if (Input.GetKey(KeyCode.H) && !m_calming)
         {
-            m_calmRoutine = StartCoroutine(CalmDown());
+            ApplyEffect(new Effect(EffectType.CALM,
+                                    k_InsanityRate,
+                                    k_InsanityDelay / 2,
+                                    -1));
+            m_calming = true;
         }
         else
         {
             if (m_calming)
             {
-                StopCoroutine(m_calmRoutine);
-                m_calmRoutine = null;
+                RemoveEffect(EffectType.CALM);
             }
         }
     }
@@ -209,13 +219,52 @@ public class PlayerController : InteractableComponent
         throw new NotImplementedException();
     }
 
-    public override void ApplyEffect(EffectType effect, int level)
+    public override void ApplyEffect(Effect effect)
     {
-        throw new NotImplementedException();
+        //switch and run handling coroutine
+        if (m_effects.ContainsKey(effect.type))
+        {
+            StopCoroutine(m_effects[effect.type].Item2);
+        }
+
+        switch (effect.type)
+        {
+            case EffectType.BLEED:
+                StopCoroutine(m_healRoutine);
+                m_effects[effect.type] = Tuple.Create(effect, StartCoroutine(HandleBleed(effect)));
+                m_isBleeding = true;
+                break;
+
+            case EffectType.CALM:
+                m_effects[effect.type] = Tuple.Create(effect, StartCoroutine(HandleCalm(effect)));
+                m_calming = true;
+                break;
+
+            default:
+                break;
+        }
     }
 
-    public override void RemoveEffect(EffectType effect)
+    public override void RemoveEffect(EffectType effectType)
     {
-        throw new NotImplementedException();
+        if(m_effects.ContainsKey(effectType))
+        {
+            StopCoroutine(m_effects[effectType].Item2);
+            m_effects.Remove(effectType);
+            switch(effectType)
+            {
+                case EffectType.BLEED:
+                    m_healRoutine = StartCoroutine(HandleHeal());
+                    m_isBleeding = false;
+                    break;
+
+                case EffectType.CALM:
+                    m_calming = false;
+                    break;
+
+                default:
+                    break;
+            }
+        }
     }
 }

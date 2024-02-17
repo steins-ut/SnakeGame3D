@@ -18,7 +18,7 @@ public class Egg : InteractableComponent
     private int m_blood = k_BloodLimit;
     private int m_temperature = 35;
 
-    public override InteractableType Type => throw new NotImplementedException();
+    public override InteractableType Type => InteractableType.ENTITY;
 
     private IEnumerator HandleTemperature()
     {
@@ -104,7 +104,7 @@ public class Egg : InteractableComponent
         return false;
     }
 
-    public override void ApplyEffect(EffectType effect, int level)
+    public override void ApplyEffect(Effect effect)
     {
         throw new NotImplementedException();
     }

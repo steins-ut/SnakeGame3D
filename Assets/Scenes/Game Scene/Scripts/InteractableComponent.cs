@@ -6,8 +6,8 @@ public abstract class InteractableComponent : MonoBehaviour
 {
     private Component m_cachedComponent = null;
     public abstract bool AcceptItem(ItemComponent item);
-    public abstract void ApplyEffect(EffectType effect, int level);
-    public abstract void RemoveEffect(EffectType effect);
+    public abstract void ApplyEffect(Effect effect);
+    public abstract void RemoveEffect(EffectType type);
     public abstract InteractableType Type { get; }
     public Component GetCachedComponent() { return m_cachedComponent; }
 

@@ -9,7 +9,12 @@ public class BloodVialItem : ItemComponent
 
     private int m_blood = 0;
 
-    public override ItemType Type => throw new NotImplementedException();
+    public override ItemType Type => ItemType.BLOOD_VIAL;
+
+    public bool AtMax()
+    {
+        return m_blood == k_BloodLimit;
+    }
 
     public void AddBlood(int blood) { m_blood = Math.Min(k_BloodLimit, m_blood + blood); }
 
