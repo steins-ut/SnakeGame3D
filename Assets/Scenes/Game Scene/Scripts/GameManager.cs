@@ -31,7 +31,6 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            Debug.Log("You win lololol");
             m_timerRoutine = null;
             yield break;
         }

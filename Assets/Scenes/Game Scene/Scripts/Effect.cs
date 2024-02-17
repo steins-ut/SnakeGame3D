@@ -2,10 +2,10 @@ public struct Effect
 {
     public EffectType type;
     public int magnitude;
-    public int delay;
+    public float delay;
     public int repeat;
 
-    public Effect(EffectType type, int magnitude, int delay, int repeat)
+    public Effect(EffectType type, int magnitude, float delay, int repeat)
     {
         this.type = type;
         this.magnitude = magnitude;

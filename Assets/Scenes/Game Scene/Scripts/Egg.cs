@@ -22,8 +22,6 @@ public class Egg : InteractableComponent
 
     private IEnumerator HandleTemperature()
     {
-        Debug.Log(m_temperature);
-
         yield return new WaitForSeconds(k_TemperatureChangeTime +
                                 UnityEngine.Random.value * k_TemperataureChangeRandomness);
 
@@ -39,8 +37,6 @@ public class Egg : InteractableComponent
 
     private IEnumerator HandleBlood()
     {
-        Debug.Log(m_blood);
-
         yield return new WaitForSeconds(k_BloodHungerTime);
 
         m_blood -= k_BloodHungerRate;

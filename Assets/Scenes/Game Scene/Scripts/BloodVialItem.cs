@@ -18,7 +18,9 @@ public class BloodVialItem : ItemComponent
 
     public void AddBlood(int blood) { m_blood = Math.Min(k_BloodLimit, m_blood + blood); }
 
-    public override bool ForceOnSelf(InteractableComponent target)
+    public int GetBlood() { return m_blood; }
+
+    public override bool ForceOnSelf()
     {
         return false;
     }
@@ -28,7 +30,7 @@ public class BloodVialItem : ItemComponent
         return target.GetType() == typeof(Egg);
     }
 
-    public override bool OnUse(InteractableComponent target)
+    public override bool Use(InteractableComponent target)
     {
         Egg egg = (Egg)target;
         egg.AddBlood(RemoveBlood(egg.GetBloodHunger()));

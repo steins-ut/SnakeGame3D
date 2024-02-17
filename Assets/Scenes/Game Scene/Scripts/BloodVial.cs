@@ -24,7 +24,7 @@ public class BloodVial : InteractableComponent
 
     public override void ApplyEffect(Effect effect)
     {
-        if(effect.type == EffectType.BLOOD_FED && m_bloodRoutine == null)
+        if (effect.type == EffectType.BLOOD_FED && m_bloodRoutine == null)
         {
             m_bloodRoutine = StartCoroutine(HandleBlood(effect));
         }
@@ -32,7 +32,10 @@ public class BloodVial : InteractableComponent
 
     private IEnumerator HandleBlood(Effect effect)
     {
-        if (vial.AtMax() || effect.repeat == 0) yield break;
+        if (vial.AtMax() || effect.repeat == 0)
+        {
+            yield break;
+        }
 
         yield return new WaitForSeconds(effect.delay);
         vial.AddBlood(effect.magnitude);
@@ -43,7 +46,7 @@ public class BloodVial : InteractableComponent
 
     public override void RemoveEffect(EffectType effect)
     {
-        if(effect == EffectType.BLOOD_FED && m_bloodRoutine != null)
+        if (effect == EffectType.BLOOD_FED && m_bloodRoutine != null)
         {
             StopCoroutine(m_bloodRoutine);
         }
