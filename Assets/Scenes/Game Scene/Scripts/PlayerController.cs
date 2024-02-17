@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : InteractableComponent
 {
     [SerializeField]
     private LayerMask m_highlightMask;
@@ -35,8 +35,10 @@ public class PlayerController : MonoBehaviour
     private int m_insanity = 0;
 
     private ItemComponent m_heldItem = null;
-    private InteractableComponent m_interactedObject = null;
+    private InteractableComponent m_focusedInteractable = null;
     private Dictionary<EffectType, Tuple<int, Coroutine>> m_effects;
+
+    public override InteractableType Type => throw new NotImplementedException();
 
     public void TakeEffect(EffectType effect, int level)
     {
@@ -117,7 +119,6 @@ public class PlayerController : MonoBehaviour
         if (m_inAnimation) return;
 
         RaycastHit hit;
-        InteractableComponent interactable = null;
 
         if (Physics.Raycast(m_mainCamera.transform.position, m_mainCamera.transform.forward, out hit, 10f, m_highlightMask))
         {
@@ -128,10 +129,11 @@ public class PlayerController : MonoBehaviour
                     if (m_previousRenderer.materials.Length > 1)
                         m_previousRenderer.materials[1].SetFloat("_Outline_Thickness", 0f);
                 }
+                m_focusedInteractable = hit.collider.GetComponent<InteractableComponent>();
+                m_previousColliderId = hit.colliderInstanceID;
+                m_previousRenderer = hit.collider.GetComponent<Renderer>();
 
-                if(m_heldItem == null || m_heldItem.IsValidTarget(hit.collider.gameObject)) { 
-                    m_previousColliderId = hit.colliderInstanceID;
-                    m_previousRenderer = hit.collider.GetComponent<Renderer>();
+                if (m_heldItem == null || m_heldItem.IsValidTarget(m_focusedInteractable)) { 
                     if (m_previousRenderer.materials.Length > 1)
                         m_previousRenderer.materials[1].SetFloat("_Outline_Thickness", 0.1f);
                 }
@@ -139,28 +141,26 @@ public class PlayerController : MonoBehaviour
 
             if (Input.GetMouseButtonDown(0))
             {
-                interactable = hit.collider.GetComponent<InteractableComponent>();
                 if (m_effects.ContainsKey(EffectType.BLEED))
                 {
-                    interactable.ApplyEffect(EffectType.BLOOD_FED, m_effects[EffectType.BLEED].Item1);
-                    m_interactedObject = interactable;
+                    m_focusedInteractable.ApplyEffect(EffectType.BLOOD_FED, m_effects[EffectType.BLEED].Item1);
                     return;
                 }
 
                 if (m_heldItem != null)
                 {
-                    if (m_interactedObject.Type == InteractableType.ENTITY)
+                    if (m_focusedInteractable.Type == InteractableType.ENTITY)
                     {
-                        m_interactedObject.AcceptItem(m_heldItem);
+                        m_focusedInteractable.AcceptItem(m_heldItem);
                         m_heldItem = null;
                     }
                 }
                 else
                 {
-                    if (interactable.Type == InteractableType.ITEM)
+                    if (m_focusedInteractable.Type == InteractableType.ITEM)
                     {
-                        ItemComponent item = (ItemComponent)interactable.GetCachedComponent();
-                        if (!item.ForceOnSelf())
+                        ItemComponent item = (ItemComponent)m_focusedInteractable.GetCachedComponent();
+                        if (!item.ForceOnSelf(this))
                         {
                             m_heldItem = item;
                         }
@@ -176,11 +176,13 @@ public class PlayerController : MonoBehaviour
                     m_previousRenderer.materials[1].SetFloat("_Outline_Thickness", 0f);
 
                 m_previousColliderId = -1;
+                m_focusedInteractable = null;
+                m_previousRenderer = null;
             }
         }
 
-        if(Input.GetMouseButtonUp(0) && m_interactedObject != null) {
-            m_interactedObject.RemoveEffect(EffectType.BLOOD_FED);
+        if(Input.GetMouseButtonUp(0) && m_focusedInteractable != null) {
+            m_focusedInteractable.RemoveEffect(EffectType.BLOOD_FED);
         }
 
         if (Input.GetKey(KeyCode.H) && !m_calming)
@@ -200,5 +202,20 @@ public class PlayerController : MonoBehaviour
     private void OnDestroy()
     {
         StopAllCoroutines();
+    }
+
+    public override bool AcceptItem(ItemComponent item)
+    {
+        throw new NotImplementedException();
+    }
+
+    public override void ApplyEffect(EffectType effect, int level)
+    {
+        throw new NotImplementedException();
+    }
+
+    public override void RemoveEffect(EffectType effect)
+    {
+        throw new NotImplementedException();
     }
 }

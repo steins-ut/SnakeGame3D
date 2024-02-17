@@ -3,23 +3,25 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BloodVial : MonoBehaviour
+[RequireComponent(typeof(BloodVialItem))]
+public class BloodVial : InteractableComponent
 {
-    private const int k_BloodLimit = 75;
+    public override InteractableType Type => InteractableType.ITEM;
 
-    private int m_blood = 0;
-
-    public void AddBlood(int blood) { m_blood = Math.Min(k_BloodLimit, m_blood + blood); }
-
-    // Start is called before the first frame update
-    void Start()
+    public override bool AcceptItem(ItemComponent item)
     {
-        
+        if(item == GetCachedComponent())
+        {
+            return true;
+        }
+        return false;
     }
 
-    // Update is called once per frame
-    void Update()
+    public override void ApplyEffect(EffectType effect, int level)
     {
-        
+    }
+
+    public override void RemoveEffect(EffectType effect)
+    {   
     }
 }

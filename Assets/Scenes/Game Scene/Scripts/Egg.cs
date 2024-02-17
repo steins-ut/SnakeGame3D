@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Egg : MonoBehaviour
+public class Egg : InteractableComponent
 {
     private const int k_BloodLimit = 100;
     private const int k_BloodHungerRate = 5;
@@ -17,6 +17,8 @@ public class Egg : MonoBehaviour
 
     private int m_blood = k_BloodLimit;
     private int m_temperature = 35;
+
+    public override InteractableType Type => throw new NotImplementedException();
 
     private IEnumerator HandleTemperature()
     {
@@ -66,6 +68,11 @@ public class Egg : MonoBehaviour
         m_blood = Math.Min(k_BloodLimit, m_blood + blood);
     }
 
+    public int GetBloodHunger()
+    {
+        return k_BloodLimit - m_blood;
+    }
+
     // Start is called before the first frame update
     private void Start()
     {
@@ -85,5 +92,25 @@ public class Egg : MonoBehaviour
     public void StopHatching()
     {
         StopAllCoroutines();
+    }
+
+    public override bool AcceptItem(ItemComponent item)
+    {
+        if(item.Type == ItemType.BLOOD_VIAL) {
+            BloodVialItem vial = (BloodVialItem)item;
+            return true;
+        }
+
+        return false;
+    }
+
+    public override void ApplyEffect(EffectType effect, int level)
+    {
+        throw new NotImplementedException();
+    }
+
+    public override void RemoveEffect(EffectType effect)
+    {
+        throw new NotImplementedException();
     }
 }
