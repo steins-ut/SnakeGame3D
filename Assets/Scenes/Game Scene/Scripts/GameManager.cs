@@ -9,9 +9,9 @@ public class GameManager : MonoBehaviour
     private TextMeshProUGUI m_timer;
 
     [SerializeField]
-    private Egg egg;
+    private Egg m_egg;
 
-    private Coroutine Timer;
+    private Coroutine m_timerRoutine;
 
     private int m_remainingTime = 900;
 
@@ -32,7 +32,7 @@ public class GameManager : MonoBehaviour
         else
         {
             Debug.Log("You win lololol");
-            Timer = null;
+            m_timerRoutine = null;
             yield break;
         }
     }
@@ -40,8 +40,8 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     private void Start()
     {
-        Timer = StartCoroutine(TickTime());
-        egg.StartHatching();
+        m_timerRoutine = StartCoroutine(TickTime());
+        m_egg.StartHatching();
     }
 
     // Update is called once per frame
