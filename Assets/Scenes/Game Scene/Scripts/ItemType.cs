@@ -1,5 +1,6 @@
 public enum ItemType
 {
     BLOOD_VIAL,
-    KNIFE
+    KNIFE,
+    BANDAGE
 }
