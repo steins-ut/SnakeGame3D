@@ -126,9 +126,14 @@ public class PlayerController : InteractableComponent
         m_healRoutine = StartCoroutine(HandleHeal());
     }
 
+    public override void Interact(InteractableComponent sender)
+    {
+
+    }
+
     public override bool AcceptItem(ItemComponent item)
     {
-        throw new NotImplementedException();
+        return false;
     }
 
     public override void ApplyEffect(Effect effect)
@@ -217,7 +222,8 @@ public class PlayerController : InteractableComponent
                 {
                     if (m_focusedInteractable.Type == InteractableType.ENTITY)
                     {
-                        m_heldItem.Use(m_focusedInteractable);
+                        if(!m_focusedInteractable.AcceptItem(m_heldItem))
+                            m_heldItem.Use(m_focusedInteractable);
                     }
                 }
                 else
@@ -252,6 +258,10 @@ public class PlayerController : InteractableComponent
                                 item.Use(this);
                             }
                         }
+                    }
+                    else
+                    {
+                        m_focusedInteractable.Interact(this);
                     }
                 }
             }

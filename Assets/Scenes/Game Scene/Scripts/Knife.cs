@@ -7,6 +7,11 @@ public class Knife : InteractableComponent
 {
     public override InteractableType Type => InteractableType.ITEM;
 
+    public override void Interact(InteractableComponent sender)
+    {
+
+    }
+
     public override bool AcceptItem(ItemComponent item)
     {
         return false;
@@ -16,6 +21,7 @@ public class Knife : InteractableComponent
     {
 
     }
+
 
     public override void RemoveEffect(EffectType type)
     {

@@ -5,6 +5,7 @@ using UnityEngine;
 public abstract class InteractableComponent : MonoBehaviour
 {
     private Component m_cachedComponent = null;
+    public abstract void Interact(InteractableComponent sender);
     public abstract bool AcceptItem(ItemComponent item);
     public abstract void ApplyEffect(Effect effect);
     public abstract void RemoveEffect(EffectType type);

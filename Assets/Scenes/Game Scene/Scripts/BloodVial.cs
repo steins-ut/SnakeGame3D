@@ -16,6 +16,10 @@ public class BloodVial : InteractableComponent
     {
         vial = (BloodVialItem)GetCachedComponent();
     }
+    public override void Interact(InteractableComponent sender)
+    {
+
+    }
 
     public override bool AcceptItem(ItemComponent item)
     {

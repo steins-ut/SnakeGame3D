@@ -2,14 +2,23 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(BandageItem))]
-public class Bandage : InteractableComponent
+public class Button : InteractableComponent
 {
-    public override InteractableType Type => InteractableType.ITEM;
+    public override InteractableType Type => InteractableType.ENTITY;
+
+    private Heater m_heater;
+
+    private void Awake()
+    {
+        m_heater = GetComponentInParent<Heater>();
+    }
 
     public override void Interact(InteractableComponent sender)
     {
-        
+        if (sender.GetType() == typeof(PlayerController))
+        {
+            m_heater.ToggleHeat();
+        }
     }
 
     public override bool AcceptItem(ItemComponent item)
@@ -21,7 +30,6 @@ public class Bandage : InteractableComponent
     {
 
     }
-
 
     public override void RemoveEffect(EffectType type)
     {
