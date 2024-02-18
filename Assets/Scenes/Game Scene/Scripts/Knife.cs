@@ -27,4 +27,9 @@ public class Knife : InteractableComponent
     {
 
     }
+
+    public override bool WillAcceptItem(ItemComponent item)
+    {
+        return false;
+    }
 }

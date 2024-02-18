@@ -5,6 +5,12 @@ using UnityEngine;
 
 public class Egg : InteractableComponent
 {
+    [SerializeField]
+    private TMPro.TextMeshPro m_temperatureText;
+
+    [SerializeField]
+    private TMPro.TextMeshProUGUI m_bloodthirstText;
+
     private const int k_BloodLimit = 100;
     private const int k_BloodHungerRate = 5;
     private const int k_BloodHungerTime = 1;
@@ -12,8 +18,8 @@ public class Egg : InteractableComponent
     private const int k_MinTemperature = 33;
     private const int k_MaxTemperature = 40;
 
-    private const float k_TemperatureChangeTime = 5f;
-    private const int k_TemperataureChangeRandomness = 0;
+    private const float k_TemperatureChangeTime = 7f;
+    private const float k_TemperataureChangeRandomness = 2f;
 
     private int m_blood = k_BloodLimit;
     private int m_temperature = 35;
@@ -22,15 +28,14 @@ public class Egg : InteractableComponent
 
     private IEnumerator HandleTemperature()
     {
-        Debug.Log(m_temperature);
         yield return new WaitForSeconds(k_TemperatureChangeTime +
-                                UnityEngine.Random.value * k_TemperataureChangeRandomness);
+                                UnityEngine.Random.Range(k_TemperatureChangeTime, 
+                                                k_TemperatureChangeTime + k_TemperataureChangeRandomness));
 
         m_temperature = m_temperature - 1;
         if (m_temperature < k_MinTemperature)
         {
-            //die code
-            Debug.Log("you dieded");
+            GameManager.s_Instance.GoToGameOver(GameOverReason.HYPOTHERMIA);
         }
 
         yield return HandleTemperature();
@@ -43,8 +48,7 @@ public class Egg : InteractableComponent
         m_blood -= k_BloodHungerRate;
         if (m_blood <= 0)
         {
-            //die code
-            Debug.Log("you dieded");
+            GameManager.s_Instance.GoToGameOver(GameOverReason.BLOODTHIRST);
         }
 
         yield return HandleBlood();
@@ -55,8 +59,7 @@ public class Egg : InteractableComponent
         m_temperature += heat;
         if (m_temperature > k_MaxTemperature)
         {
-            //die code
-            Debug.Log("you dieded");
+            GameManager.s_Instance.GoToGameOver(GameOverReason.HYPERTHERMIA);
         }
     }
 
@@ -78,6 +81,8 @@ public class Egg : InteractableComponent
     // Update is called once per frame
     private void Update()
     {
+        m_temperatureText.text = m_temperature.ToString() + "°C";
+        m_bloodthirstText.text = m_blood.ToString();
     }
 
     public void StartHatching()
@@ -93,8 +98,11 @@ public class Egg : InteractableComponent
 
     public override bool AcceptItem(ItemComponent item)
     {
-        if(item.Type == ItemType.BLOOD_VIAL) {
+        if(WillAcceptItem(item)) {
             BloodVialItem vial = (BloodVialItem)item;
+            int add = vial.RemoveBlood(GetBloodHunger());
+            m_blood += add;
+            Debug.Log(add);
             return true;
         }
 
@@ -114,5 +122,10 @@ public class Egg : InteractableComponent
     public override void Interact(InteractableComponent sender)
     {
 
+    }
+
+    public override bool WillAcceptItem(ItemComponent item)
+    {
+        return item.Type == ItemType.BLOOD_VIAL;
     }
 }

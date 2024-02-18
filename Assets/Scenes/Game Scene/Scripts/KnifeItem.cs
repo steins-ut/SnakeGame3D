@@ -6,7 +6,7 @@ public class KnifeItem : ItemComponent
 {
     public override ItemType Type => ItemType.KNIFE;
 
-    private const int k_BleedRate = 8;
+    private const int k_BleedRate = 16;
     private const float k_BleedDelay = 2f;
 
     public override bool ForceOnSelf()
@@ -16,8 +16,13 @@ public class KnifeItem : ItemComponent
 
     public override bool IsValidTarget(InteractableComponent target)
     {
-        return target.GetType() == typeof(PlayerController) 
+        return target.GetType() == typeof(PlayerController)
             && !((PlayerController)target).IsBleeding();
+    }
+
+    public override string GetUseAnimationTrigger()
+    {
+        return "knife";
     }
 
     public override bool Use(InteractableComponent target)

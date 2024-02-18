@@ -55,4 +55,9 @@ public class BloodVial : InteractableComponent
             StopCoroutine(m_bloodRoutine);
         }
     }
+
+    public override bool WillAcceptItem(ItemComponent item)
+    {
+        return false;
+    }
 }

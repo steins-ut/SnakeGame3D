@@ -27,7 +27,7 @@ public class Heater : MonoBehaviour
                 StopCoroutine(m_heaterRoutine);
         }
         else {
-            StartCoroutine(HandleHeat());
+            m_heaterRoutine = StartCoroutine(HandleHeat());
         }
     }
 }

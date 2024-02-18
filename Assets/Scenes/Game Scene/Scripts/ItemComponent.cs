@@ -12,13 +12,20 @@ public abstract class ItemComponent : MonoBehaviour
 
     public abstract ItemType Type { get; }
 
-    public abstract bool IsValidTarget(InteractableComponent target);
+    public virtual bool IsValidTarget(InteractableComponent target)
+    { return false; }
 
-    public abstract bool ForceOnSelf();
+    public virtual bool ForceOnSelf()
+    { return false; }
+
+    public virtual string GetUseAnimationTrigger()
+    { return null; }
 
     public abstract bool Use(InteractableComponent target);
 
-    public Quaternion GetHoldRotation() { return m_HoldRotation; }
+    public Quaternion GetHoldRotation()
+    { return m_HoldRotation; }
 
-    public Vector3 GetHoldPosition() { return m_HoldPosition; }
+    public Vector3 GetHoldPosition()
+    { return m_HoldPosition; }
 }

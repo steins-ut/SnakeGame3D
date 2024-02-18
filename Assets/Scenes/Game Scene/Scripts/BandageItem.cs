@@ -17,6 +17,11 @@ public class BandageItem : ItemComponent
             && ((PlayerController)target).IsBleeding();
     }
 
+    public override string GetUseAnimationTrigger()
+    {
+        return "bandage";
+    }
+
     public override bool Use(InteractableComponent target)
     {
         target.RemoveEffect(EffectType.BLEED);

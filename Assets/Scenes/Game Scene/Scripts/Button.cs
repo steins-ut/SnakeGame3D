@@ -6,6 +6,8 @@ public class Button : InteractableComponent
 {
     public override InteractableType Type => InteractableType.ENTITY;
 
+    [SerializeField]
+    private GameObject m_light;
     private Heater m_heater;
 
     private void Awake()
@@ -18,6 +20,7 @@ public class Button : InteractableComponent
         if (sender.GetType() == typeof(PlayerController))
         {
             m_heater.ToggleHeat();
+            m_light.SetActive(!m_light.activeSelf);
         }
     }
 
@@ -34,5 +37,10 @@ public class Button : InteractableComponent
     public override void RemoveEffect(EffectType type)
     {
 
+    }
+
+    public override bool WillAcceptItem(ItemComponent item)
+    {
+        return false;
     }
 }

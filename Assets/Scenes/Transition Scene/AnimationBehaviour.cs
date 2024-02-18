@@ -20,6 +20,7 @@ public class AnimationBehaviour : StateMachineBehaviour
     // OnStateExit is called when a transition ends and the state machine finishes evaluating this state
     override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
+        animator.GetComponent<MessageData>().GetLine1().text = "yey";
         SceneManager.LoadScene("Game Scene");
     }
 
