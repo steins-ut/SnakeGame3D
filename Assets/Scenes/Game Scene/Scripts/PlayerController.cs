@@ -78,9 +78,10 @@ public class PlayerController : InteractableComponent
 
         yield return new WaitForSeconds(effect.delay);
         m_blood = Math.Max(m_blackoutLimit, m_blood - effect.magnitude);
-        if (m_blood == m_blackoutLimit)
+        if (m_blood <= m_blackoutLimit)
         {
             m_blackedOut = true;
+            StartCoroutine(HandleBlackout());
             RemoveEffect(EffectType.BLEED);
             yield break;
         }
@@ -104,10 +105,12 @@ public class PlayerController : InteractableComponent
 
     private IEnumerator HandleBlackout()
     {
+        Debug.Log("HEYYYY???");
+
         yield return new WaitForSeconds(UnityEngine.Random.Range(k_BlackoutMin, k_BlackoutMax));
 
+        Debug.Log("HEYYYY???");
         m_blackedOut = false;
-        m_blood = k_BloodLimit / 3;
 
         yield break;
     }
@@ -164,9 +167,9 @@ public class PlayerController : InteractableComponent
         {
             case EffectType.BLEED:
                 StopCoroutine(m_healRoutine);
-                m_bloodParticles.Play();
                 m_effects[effect.type] = Tuple.Create(effect, StartCoroutine(HandleBleed(effect)));
                 m_isBleeding = true;
+                m_bloodParticles.Play();
                 break;
 
             case EffectType.CALM:
@@ -190,7 +193,7 @@ public class PlayerController : InteractableComponent
                 case EffectType.BLEED:
                     m_healRoutine = StartCoroutine(HandleHeal());
                     m_isBleeding = false;
-                    m_bloodParticles.Pause();
+                    m_bloodParticles.Stop();
                     break;
 
                 case EffectType.CALM:
@@ -222,6 +225,7 @@ public class PlayerController : InteractableComponent
         m_cameraAnimator = m_mainCamera.GetComponent<Animator>();
         StartCoroutine(HandleInsanity());
         m_healRoutine = StartCoroutine(HandleHeal());
+        m_bloodParticles.Stop();
     }
 
     // Update is called once per frame
