@@ -21,6 +21,7 @@ public class Button : InteractableComponent
         {
             m_heater.ToggleHeat();
             m_light.SetActive(!m_light.activeSelf);
+            SoundManager.s_Instance.PlayButtonSound();
         }
     }
 

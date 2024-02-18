@@ -11,10 +11,14 @@ public class GameOverHandler : MonoBehaviour
     [SerializeField]
     private TMPro.TextMeshProUGUI m_description;
 
+    [SerializeField]
+    private UnityEngine.UI.Image EGG;
+
     void Start()
     {
         m_message.text = Globals.s_GameOverMessage;
         m_description.text = Globals.s_GameOverDescription;
+        EGG.enabled = Globals.s_GameOverWin;
     }
 
     public void Replay()

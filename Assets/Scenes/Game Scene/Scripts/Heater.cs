@@ -12,7 +12,8 @@ public class Heater : MonoBehaviour
 
     private Coroutine m_heaterRoutine = null;
 
-    private IEnumerator HandleHeat() {
+    private IEnumerator HandleHeat()
+    {
         yield return new WaitForSeconds(k_HeatDelay);
 
         m_egg.AddHeat(k_HeatChange);
@@ -22,11 +23,15 @@ public class Heater : MonoBehaviour
 
     public void ToggleHeat()
     {
-        Debug.Log("Toggled.");
-        if (m_heaterRoutine != null) { 
-                StopCoroutine(m_heaterRoutine);
+        if (m_heaterRoutine != null)
+        {
+            SoundManager.s_Instance.StopMicrowaveHum();
+            StopCoroutine(m_heaterRoutine);
+            m_heaterRoutine = null;
         }
-        else {
+        else
+        {
+            SoundManager.s_Instance.PlayMicrowaveHum();
             m_heaterRoutine = StartCoroutine(HandleHeat());
         }
     }

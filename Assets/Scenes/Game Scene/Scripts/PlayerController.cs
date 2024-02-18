@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
-using UnityEditor.Animations;
 using UnityEngine;
 
 public class PlayerController : InteractableComponent
@@ -52,7 +51,7 @@ public class PlayerController : InteractableComponent
     private const int k_BloodRegenRate = 12;
     private const float k_BloodRegenDelay = 5f;
 
-    private const int k_InsanityRate = 2;
+    private const int k_InsanityRate = 4;
     private const float k_InsanityDelay = 1f;
     private const int k_InsanityLimit = 100;
 
@@ -105,11 +104,8 @@ public class PlayerController : InteractableComponent
 
     private IEnumerator HandleBlackout()
     {
-        Debug.Log("HEYYYY???");
-
         yield return new WaitForSeconds(UnityEngine.Random.Range(k_BlackoutMin, k_BlackoutMax));
 
-        Debug.Log("HEYYYY???");
         m_blackedOut = false;
 
         yield break;
@@ -144,6 +140,10 @@ public class PlayerController : InteractableComponent
     public void EndAnimation()
     {
         m_inAnimation = false;
+        if (m_heldItem.Type == ItemType.FRYING_PAN)
+        {
+            GameManager.s_Instance.Egged();
+        }
     }
 
     public override void Interact(InteractableComponent sender)
@@ -269,6 +269,13 @@ public class PlayerController : InteractableComponent
                     {
                         if (!m_focusedInteractable.AcceptItem(m_heldItem))
                             m_heldItem.Use(m_focusedInteractable);
+
+                        if (m_heldItem.GetUseAnimationTrigger() != null)
+                        {
+                            m_inAnimation = true;
+                            m_cameraAnimator.Rebind();
+                            m_cameraAnimator.SetTrigger(m_heldItem.GetUseAnimationTrigger());
+                        }
                     }
                 }
                 else
@@ -358,6 +365,7 @@ public class PlayerController : InteractableComponent
                                     -1));
 
                 m_eyeLidAnimator.SetTrigger("close");
+                SoundManager.s_Instance.PlaySlowBreath();
             }
         }
         else
@@ -366,11 +374,26 @@ public class PlayerController : InteractableComponent
             {
                 RemoveEffect(EffectType.CALM);
                 m_eyeLidAnimator.SetTrigger("open");
+                SoundManager.s_Instance.StopSlowBreath();
             }
         }
 
         if (Input.GetKeyDown(KeyCode.C) && m_heldItem != null)
         {
+            switch (m_heldItem.Type)
+            {
+                case ItemType.BLOOD_VIAL:
+                    SoundManager.s_Instance.PlayVialPutSound();
+                    break;
+
+                case ItemType.KNIFE:
+                    SoundManager.s_Instance.PlayKnifePutSound();
+                    break;
+
+                default:
+                    break;
+            }
+
             m_heldItem.gameObject.layer = m_previousLayer;
             m_totalTransform.parent = m_previousParent;
             m_cameraAnimator.Rebind();

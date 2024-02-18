@@ -12,8 +12,8 @@ public class Egg : InteractableComponent
     private TMPro.TextMeshProUGUI m_bloodthirstText;
 
     private const int k_BloodLimit = 100;
-    private const int k_BloodHungerRate = 5;
-    private const int k_BloodHungerTime = 1;
+    private const int k_BloodHungerRate = 7;
+    private const int k_BloodHungerTime = 3;
 
     private const int k_MinTemperature = 33;
     private const int k_MaxTemperature = 40;
@@ -29,7 +29,7 @@ public class Egg : InteractableComponent
     private IEnumerator HandleTemperature()
     {
         yield return new WaitForSeconds(k_TemperatureChangeTime +
-                                UnityEngine.Random.Range(k_TemperatureChangeTime, 
+                                UnityEngine.Random.Range(k_TemperatureChangeTime,
                                                 k_TemperatureChangeTime + k_TemperataureChangeRandomness));
 
         m_temperature = m_temperature - 1;
@@ -98,7 +98,8 @@ public class Egg : InteractableComponent
 
     public override bool AcceptItem(ItemComponent item)
     {
-        if(WillAcceptItem(item)) {
+        if (WillAcceptItem(item))
+        {
             BloodVialItem vial = (BloodVialItem)item;
             int add = vial.RemoveBlood(GetBloodHunger());
             m_blood += add;
@@ -111,17 +112,14 @@ public class Egg : InteractableComponent
 
     public override void ApplyEffect(Effect effect)
     {
-
     }
 
     public override void RemoveEffect(EffectType effect)
     {
-
     }
 
     public override void Interact(InteractableComponent sender)
     {
-
     }
 
     public override bool WillAcceptItem(ItemComponent item)

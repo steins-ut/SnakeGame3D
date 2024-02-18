@@ -36,7 +36,7 @@ public class GameManager : MonoBehaviour
     private Coroutine m_timerRoutine;
     private Coroutine m_monsterCoroutine;
 
-    private int m_remainingTime = 243;
+    private int m_remainingTime = 360;
     private bool m_monsterSpawned = false;
 
     private void Awake()
@@ -120,15 +120,24 @@ public class GameManager : MonoBehaviour
     {
         Globals.s_GameOverMessage = "You lose.";
         Globals.s_GameOverDescription = GameOverReasonUtility.GetDescription(reason);
-        Globals.s_GameOverWin = false;
+        Globals.s_GameOverSurvive = false;
 
-        //SceneManager.LoadScene("Game Over Scene");
+        SceneManager.LoadScene("Game Over Scene");
     }
 
     public void GoToWin()
     {
-        Globals.s_GameOverMessage = "You win!";
-        Globals.s_GameOverDescription = "epic.";
+        Globals.s_GameOverMessage = "You survied.";
+        Globals.s_GameOverDescription = "The egg is healthy...";
+        Globals.s_GameOverSurvive = true;
+
+        SceneManager.LoadScene("Game Over Scene");
+    }
+
+    public void Egged()
+    {
+        Globals.s_GameOverMessage = "You are the winner!!!!!! :D";
+        Globals.s_GameOverDescription = "This was truly the egg of all time";
         Globals.s_GameOverWin = true;
 
         SceneManager.LoadScene("Game Over Scene");
