@@ -133,4 +133,26 @@ public class SoundManager : MonoBehaviour
         m_sources[id].PlayOneShot(m_sounds[9]);
         StartCoroutine(HandleOnceFree(id, m_sounds[9].length));
     }
+
+    public void PlayVialFillSound()
+    {
+        if (m_songToSource.ContainsKey(10)) return;
+
+        int id = GetAudioSourceId();
+        m_sources[id].loop = true;
+        m_sources[id].clip = m_sounds[10];
+        m_sources[id].Play();
+        m_songToSource.Add(10, id);
+    }
+
+    public void StopVialFillSound()
+    {
+        if (!m_songToSource.ContainsKey(10)) return;
+
+        int id = m_songToSource[10];
+        m_sources[id].loop = false;
+        m_sources[id].Stop();
+        m_availableIndices.Enqueue(id);
+        m_songToSource.Remove(10);
+    }
 }

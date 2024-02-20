@@ -14,8 +14,9 @@ public class GameOverHandler : MonoBehaviour
     [SerializeField]
     private UnityEngine.UI.Image EGG;
 
-    void Start()
+    private void Start()
     {
+        Cursor.visible = true;
         m_message.text = Globals.s_GameOverMessage;
         m_description.text = Globals.s_GameOverDescription;
         EGG.enabled = Globals.s_GameOverWin;
@@ -23,11 +24,13 @@ public class GameOverHandler : MonoBehaviour
 
     public void Replay()
     {
+        EGG.enabled = false;
         SceneManager.LoadScene("Game Scene");
     }
 
     public void ToMenu()
     {
+        EGG.enabled = false;
         SceneManager.LoadScene("Menu Scene");
     }
 }

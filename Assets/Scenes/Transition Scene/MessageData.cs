@@ -15,6 +15,7 @@ public class MessageData : MonoBehaviour
     private void Start()
     {
         AudioSource source = GetComponent<AudioSource>();
+        GetComponent<Animator>().SetTrigger("animate");
         source.loop = false;
         source.Play();
     }

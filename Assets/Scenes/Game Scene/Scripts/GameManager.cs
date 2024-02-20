@@ -36,13 +36,16 @@ public class GameManager : MonoBehaviour
     private Coroutine m_timerRoutine;
     private Coroutine m_monsterCoroutine;
 
-    private int m_remainingTime = 360;
+    private int m_remainingTime = 240;
     private bool m_monsterSpawned = false;
 
     private void Awake()
     {
         s_Instance = this;
         Cursor.visible = false;
+        Globals.s_GameOverMessage = "";
+        Globals.s_GameOverDescription = "";
+        Globals.s_GameOverWin = false;
     }
 
     public void FinishAnimation()
@@ -78,12 +81,12 @@ public class GameManager : MonoBehaviour
 
         if (m_remainingTime > 0)
         {
-            if (m_remainingTime == 240)
+            /*if (m_remainingTime == 238)
             {
                 m_houseAnimator.SetTrigger("monster_entrance");
             }
 
-            if (m_remainingTime < 240)
+            if (m_remainingTime < 238)
             {
                 float roll = Random.Range(0f, 1f);
                 if (roll < 0.30f && !m_monsterSpawned)
@@ -93,7 +96,7 @@ public class GameManager : MonoBehaviour
                     m_monsterSpawned = true;
                 }
             }
-
+            */
             yield return TickTime();
         }
         else

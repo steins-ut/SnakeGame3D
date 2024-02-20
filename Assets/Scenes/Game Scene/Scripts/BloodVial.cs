@@ -16,9 +16,9 @@ public class BloodVial : InteractableComponent
     {
         vial = (BloodVialItem)GetCachedComponent();
     }
+
     public override void Interact(InteractableComponent sender)
     {
-
     }
 
     public override bool AcceptItem(ItemComponent item)
@@ -31,6 +31,7 @@ public class BloodVial : InteractableComponent
         if (effect.type == EffectType.BLOOD_FED && m_bloodRoutine == null)
         {
             m_bloodRoutine = StartCoroutine(HandleBlood(effect));
+            SoundManager.s_Instance.PlayVialFillSound();
         }
     }
 
@@ -53,6 +54,7 @@ public class BloodVial : InteractableComponent
         if (effect == EffectType.BLOOD_FED && m_bloodRoutine != null)
         {
             StopCoroutine(m_bloodRoutine);
+            SoundManager.s_Instance.StopVialFillSound();
         }
     }
 

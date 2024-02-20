@@ -49,7 +49,7 @@ public class PlayerController : InteractableComponent
     private const int k_BlackoutMax = 4;
     private const int k_BloodLimit = 120;
     private const int k_BloodRegenRate = 12;
-    private const float k_BloodRegenDelay = 5f;
+    private const float k_BloodRegenDelay = 4f;
 
     private const int k_InsanityRate = 4;
     private const float k_InsanityDelay = 1f;
@@ -393,6 +393,8 @@ public class PlayerController : InteractableComponent
                 default:
                     break;
             }
+
+            m_heldItem.GetComponent<InteractableComponent>().RemoveEffect(EffectType.BLOOD_FED);
 
             m_heldItem.gameObject.layer = m_previousLayer;
             m_totalTransform.parent = m_previousParent;
